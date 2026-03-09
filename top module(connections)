@@ -1,0 +1,43 @@
+module top;
+
+    logic run,miso, ss_in_1,sclk, mosi,done, done_s,ss1,ss2;
+    logic [7:0]din_m;
+    logic [7:0] dout;
+    logic [7:0] din_s;
+    logic [7:0] dout_s;
+
+
+ master m1 ( 
+                      .miso(miso), .run(run), 
+                      .ss_in_1(ss_in_1),
+                       .din_m(din_m),
+                      .sclk(sclk),
+                      .mosi(mosi),
+                     .done(done),
+                      .ss1(ss1),
+                     .ss2(ss2),
+                       .dout(dout)
+                );
+
+                spi_slave s1(
+                        .sclk(sclk),
+                        .ss(ss1),
+                         .run(run),
+                        .mosi(mosi),
+                      .din_s(din_s),
+                       .miso(miso),
+                         .done_s(done_s),
+                     .dout_s(dout_s)
+                );
+                spi_slave s2(
+                        .sclk(sclk),
+                        .ss(ss2),
+                         .run(run),
+                        .mosi(mosi),
+                      .din_s(din_s),
+                       .miso(miso),
+                         .done_s(done_s),
+                     .dout_s(dout_s)
+                );
+
+endmodule
