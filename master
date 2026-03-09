@@ -1,0 +1,111 @@
+module master( 
+                    input logic miso, run, ss_in_1,
+                    input logic [7:0] din_m,
+                    
+                    output logic sclk,
+                    output logic mosi,
+                    output logic done,
+                    output logic ss1,
+                    output logic ss2,
+                    
+                    output reg [7:0] dout
+                );
+
+
+
+logic [7:0] data_register;
+logic [3:0] ptr;
+
+logic clk_in =0;
+always #(1) clk_in = ~clk_in;
+
+always_ff @(posedge clk_in)begin
+    if(!run) begin
+        data_register <= din_m;
+        done<=0;
+        ptr<=0;
+        slave_select();
+    end
+
+    if(run && (!done)) begin
+            spi_operation();
+            ptr <= ptr+1;
+    end
+end
+
+
+function void slave_select();
+    if(!ss_in_1) begin
+        ss1=1;ss2=0;
+    end 
+    else begin
+        ss1=0; ss2=1;
+    end
+endfunction
+
+
+
+task spi_operation();
+    case(ptr)
+        0:begin
+
+                mosi <= data_register[7];
+        end
+
+        1: begin
+            data_register <= (data_register >> 1);
+            mosi <= data_register[7];
+            data_register[0] <= miso;
+        end
+        2: begin
+            data_register <= (data_register >> 1);
+            mosi <= data_register[7];
+            data_register[0] <=miso;
+        end
+        3 : begin
+            data_register <= (data_register >> 1);
+            mosi <= data_register[7];
+            data_register[0]<= miso;
+        end
+        4: begin
+            data_register <= (data_register >> 1);
+            mosi <= data_register[7];
+            data_register[0] <= miso;
+        end 
+        
+        5: begin
+            data_register <= (data_register >> 1);
+            mosi <= data_register[7];
+            data_register[0] <= miso;
+        end
+        6: begin
+            data_register <= (data_register >> 1);
+            mosi <= data_register[7];
+            data_register[0] <= miso;
+        end
+        7: begin
+            data_register <= (data_register >> 1);
+            mosi <= data_register[7];
+            data_register[0] <= miso;
+        end
+        8: begin
+            data_register <= (data_register >> 1);
+            data_register[0] <= miso;
+            dout <= data_register;
+            done <= 1;
+        end
+
+        default : begin
+        end
+    endcase
+    
+endtask
+        
+
+    assign sclk = clk_in;
+
+endmodule
+
+                
+
+
