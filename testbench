@@ -1,0 +1,69 @@
+
+    top dut();
+
+  
+    initial begin
+        // initialize
+        dut.run      = 0;
+        dut.ss_in_1  = 0;   
+        dut.din_m    = 8'hA5;
+        dut.din_s   = 8'h3C;
+        
+
+        #5;
+
+        dut.run = 1;
+        #40;
+
+        dut.run = 0;
+
+        #20;
+
+        $display("Master received = %h", dut.dout);
+        $display("Slave1 received = %h", dut.dout_s);
+
+
+        #20;
+        $finish;
+    end
+
+
+    initial begin
+        $dumpfile("spi_wave.vcd");
+        $dumpvars(0, top_tb);
+    end
+
+
+e
+assert property (@(posedge sclk)
+    !(ss1 && ss2)
+) else $error("ERROR: Both slaves selected!");
+
+property done_after_last_bit;
+    @(posedge sclk)
+    done |-> (ptr == 8'd8);
+endproperty
+
+assert property (done_after_last_bit)
+    else $error("Done asserted early!");
+
+    property load_check;
+    @(posedge sclk)
+    (!run) |-> (data_register == din);
+endproperty
+
+assert property (load_check)
+    else $error("Master failed to load input data");
+
+
+    property ptr_reset_check;
+    @(posedge sclk)
+    (!run) |-> (ptr == 0);
+endproperty
+
+assert property (ptr_reset_check)
+    else $error("Pointer not reset properly");
+
+
+    
+endmodule
