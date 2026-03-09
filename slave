@@ -1,0 +1,96 @@
+module spi_slave (
+                    input    logic    sclk,
+                    input logic ss,
+                    input   logic     run,
+                    input   logic     mosi,
+                    input logic [7:0] din_s,
+                    output logic      miso,
+                    output logic      done_s,
+                    output logic [7:0] dout_s
+);
+
+
+         logic [7:0] data_register;
+         logic [3:0] ptr;
+
+
+
+            always_ff @(posedge sclk)begin
+                if(!run) begin
+                    data_register <= din;
+                    done_s <=0;
+                    ptr <=0;
+                end
+
+                else if(run && (!done_s) && ss ) begin
+                        spi_operation();
+                        ptr <= ptr+1;
+                end
+            end
+
+
+            task spi_operation();
+                case(ptr)
+                    0:begin
+
+                            miso <= data_register[7];
+                    end
+
+                    1: begin
+                        data_register <= (data_register >> 1);
+                        miso <= data_register[7];
+                         data_register[0] <= mosi;
+                        
+                    end
+                    2: begin
+                        data_register <= (data_register >> 1);
+                         miso <= data_register[7];
+                         data_register[0] <= mosi;
+                        
+                    end
+                    3 : begin
+                        data_register <= (data_register >> 1);
+                        miso <= data_register[7];
+                         data_register[0] <= mosi;
+                    end
+                    4: begin
+                        data_register <= (data_register >> 1);
+                        miso <= data_register[7];
+                         data_register[0] <= mosi;
+                    end 
+                    
+                    5: begin
+                        data_register <= (data_register >> 1);
+                        miso <= data_register[7];
+                        data_register[0] <= mosi;
+                    end
+                    6: begin
+                        data_register <= (data_register >> 1);
+                        miso <= data_register[7];
+                         data_register[0] <= mosi;
+                    end
+                    7: begin
+                        data_register <= (data_register >> 1);
+                        miso <= data_register[7];
+                         data_register[0] <= mosi;
+                    end
+                    8: begin
+                        data_register <= (data_register >> 1);
+                         data_register[0] <= mosi;
+                        dout_s <= data_register;
+                        done_s <= 1;
+                    end
+
+                    default : begin
+                    end
+                endcase
+                
+            endtask
+                    
+
+endmodule
+
+                
+
+
+
